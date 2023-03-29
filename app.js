@@ -1,10 +1,10 @@
-const express = require('express');
-const path = require('path')
-const app = express();
-port = 3000;
-app.use(express.static('public'));
-app.get('/',(req,res)=>{
-    res.sendFile(path.resolve(__dirname,'pages/index.html'))
-})
+const express = require("express");
+const dotenv = require("dotenv").config();
+const path = require("path");
 
-app.listen(3000,()=>console.log(`app listening to the port ${port}`))
+port = process.env.PORT || 5000;
+const app = express();
+app.get("/api/blogs/", (req, res) => {
+  res.send("Hello world");
+});
+app.listen(port, () => console.log(`app listening to the port ${port}`));
