@@ -64,14 +64,17 @@ const loginUser = asyncHandler(async (req, res) => {
 //GET /api/users/me
 //Private
 const getUser = asyncHandler(async (req, res) => {
-  res.json({
-    message: "User data display",
+  const { _id, name, email } = await User.findById(req.user.id);
+  res.send({
+    _id,
+    name,
+    email,
   });
 });
 
 //generatin jwt token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "10d" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "5d" });
 };
 
 module.exports = { registerUser, loginUser, getUser };
