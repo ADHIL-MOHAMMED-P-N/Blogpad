@@ -6,9 +6,10 @@ const {
   updateBlogs,
   deleteBlogs,
 } = require("../controllers/blogControllers");
+const protect = require("../middleware/authMiddleware");
 
-router.route("/").get(getBlogs).post(setBlogs);
-router.route("/:id").put(updateBlogs).delete(deleteBlogs);
+router.route("/").get(protect, getBlogs).post(protect, setBlogs);
+router.route("/:id").put(protect, updateBlogs).delete(protect, deleteBlogs);
 
 /* router.get("/", getBlogs);
 router.post("/", setBlogs); */

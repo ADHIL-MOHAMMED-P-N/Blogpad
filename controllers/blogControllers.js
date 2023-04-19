@@ -1,10 +1,11 @@
 const asyncHandler = require("express-async-handler"); /* handling exceptions inside of async express routes and passing them to your express error handlers.No need to write try-catch for every async routes */
 const Blog = require("../models/blogModel");
+const User = require("../models/userModels");
 //Get blogs
 //GET /api/goals
 //Private
 const getBlogs = asyncHandler(async (req, res) => {
-  const blogs = await Blog.find();
+  const blogs = await Blog.find({ user: req.user.id });
   res.status(200).json(blogs);
 });
 
@@ -19,6 +20,7 @@ const setBlogs = asyncHandler(async (req, res) => {
 
   const blog = await Blog.create({
     text: req.body.text,
+    user: req.user.id,
   });
 
   res.status(200).json(blog);
@@ -33,6 +35,18 @@ const updateBlogs = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Blog not found");
   }
+
+  //makesure loged in user is blog user
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+  if (blog.user.toString() !== user.id) {
+    res.status(401);
+    throw new Error("user no autherized");
+  }
+
   const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
@@ -40,7 +54,7 @@ const updateBlogs = asyncHandler(async (req, res) => {
 });
 
 //Delete blogs
-//DELETE /api/goals/id
+//DELETE /api/blogs/id
 //Private
 const deleteBlogs = asyncHandler(async (req, res) => {
   const blog = await Blog.findById(req.params.id);
@@ -48,8 +62,18 @@ const deleteBlogs = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Blog not found");
   }
-  await Blog.findByIdAndDelete(req.params.id);
+  //makesure loged in user is blog user
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+  if (blog.user.toString() !== user.id) {
+    res.status(401);
+    throw new Error("user no autherized");
+  }
 
+  await Blog.findByIdAndDelete(req.params.id);
   res.status(200).json({ id: req.params.id });
 });
 
