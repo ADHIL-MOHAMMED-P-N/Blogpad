@@ -74,12 +74,23 @@ const deleteBlogs = asyncHandler(async (req, res) => {
   }
 
   await Blog.findByIdAndDelete(req.params.id);
-  res.status(200).json({ id: req.params.id });
+  res.status(200).json({ id: req.params.id, message: "Blog deleted" });
 });
 
+/* get sample blogs */
+const getSampleBlogs = asyncHandler(async (req, res) => {
+  const sampleBlogs = await Blog.find().sort({ createdAt: -1 }).limit(10);
+  if (sampleBlogs.length === 0) {
+    res.status(400);
+    throw new Error("No blog posts,register and add blogs");
+  }
+  res.status(200);
+  res.json(sampleBlogs);
+});
 module.exports = {
   getBlogs,
   setBlogs,
   updateBlogs,
   deleteBlogs,
+  getSampleBlogs,
 };
